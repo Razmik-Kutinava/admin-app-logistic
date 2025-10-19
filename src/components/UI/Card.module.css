@@ -1,0 +1,73 @@
+.card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+/* Padding variants */
+.paddingNone {
+  padding: 0;
+}
+
+.paddingSmall {
+  padding: 12px;
+}
+
+.paddingMedium {
+  padding: 20px;
+}
+
+.paddingLarge {
+  padding: 32px;
+}
+
+/* Shadow variants */
+.shadowNone {
+  box-shadow: none;
+}
+
+.shadowSmall {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.shadowMedium {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.shadowLarge {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effect */
+.hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+/* Header */
+.header {
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1C1C1E;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #8E8E93;
+}
+
+.content {
+  /* Container for card content */
+}
+
+

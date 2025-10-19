@@ -1,0 +1,58 @@
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1C1C1E;
+}
+
+.input {
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 1px solid #D1D1D6;
+  border-radius: 8px;
+  background: white;
+  color: #1C1C1E;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #007AFF;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.input:disabled {
+  background: #F5F5F7;
+  color: #8E8E93;
+  cursor: not-allowed;
+}
+
+.input.error {
+  border-color: #FF3B30;
+}
+
+.input.error:focus {
+  box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.1);
+}
+
+.helperText {
+  font-size: 13px;
+  color: #8E8E93;
+}
+
+.errorText {
+  font-size: 13px;
+  color: #FF3B30;
+}
+
+

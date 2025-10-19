@@ -1,0 +1,196 @@
+.viewModeToggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.toggleBtn {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggleBtn:hover {
+  background: rgba(0, 122, 255, 0.1);
+  color: #007AFF;
+}
+
+.toggleBtn.active {
+  background: #007AFF;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 122, 255, 0.3);
+}
+
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.comparisonItem {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.comparisonItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comparisonItem h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.comparisonValues {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.todayValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: #007AFF;
+}
+
+.yesterdayValue {
+  font-size: 16px;
+  color: #8E8E93;
+  font-weight: 500;
+}
+
+.changeValue {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.changeValue.positive {
+  background: rgba(52, 199, 89, 0.1);
+  color: #34C759;
+}
+
+.changeValue.negative {
+  background: rgba(255, 59, 48, 0.1);
+  color: #FF3B30;
+}
+
+.changeValue.neutral {
+  background: rgba(142, 142, 147, 0.1);
+  color: #8E8E93;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #8E8E93;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #E5E5EA;
+  border-top: 3px solid #007AFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Dark theme support */
+.dark .viewModeToggle {
+  background: #2C2C2E;
+  border-color: #48484A;
+}
+
+.dark .toggleBtn {
+  color: #8E8E93;
+}
+
+.dark .toggleBtn:hover {
+  background: rgba(0, 122, 255, 0.2);
+  color: #007AFF;
+}
+
+.dark .toggleBtn.active {
+  background: #007AFF;
+  color: white;
+}
+
+.dark .comparisonItem {
+  background: #2C2C2E;
+  border-color: #48484A;
+}
+
+.dark .comparisonItem h4 {
+  color: #8E8E93;
+}
+
+.dark .todayValue {
+  color: #007AFF;
+}
+
+.dark .yesterdayValue {
+  color: #8E8E93;
+}
+
+.dark .changeValue.positive {
+  background: rgba(52, 199, 89, 0.2);
+  color: #34C759;
+}
+
+.dark .changeValue.negative {
+  background: rgba(255, 59, 48, 0.2);
+  color: #FF3B30;
+}
+
+.dark .changeValue.neutral {
+  background: rgba(142, 142, 147, 0.2);
+  color: #8E8E93;
+}
+
+.dark .loading {
+  color: #8E8E93;
+}
+
+.dark .spinner {
+  border-color: #48484A;
+  border-top-color: #007AFF;
+}

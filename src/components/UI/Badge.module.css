@@ -1,0 +1,67 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Sizes */
+.small {
+  font-size: 12px;
+  padding: 2px 8px;
+  gap: 3px;
+}
+
+.medium {
+  font-size: 13px;
+  padding: 4px 10px;
+  gap: 4px;
+}
+
+.large {
+  font-size: 14px;
+  padding: 6px 12px;
+  gap: 5px;
+}
+
+/* Colors */
+.green {
+  background: rgba(52, 199, 89, 0.15);
+  color: #34C759;
+}
+
+.blue {
+  background: rgba(0, 122, 255, 0.15);
+  color: #007AFF;
+}
+
+.orange {
+  background: rgba(255, 149, 0, 0.15);
+  color: #FF9500;
+}
+
+.red {
+  background: rgba(255, 59, 48, 0.15);
+  color: #FF3B30;
+}
+
+.gray {
+  background: rgba(142, 142, 147, 0.15);
+  color: #8E8E93;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+}
+
+
