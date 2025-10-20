@@ -123,6 +123,27 @@
   margin-bottom: 24px;
 }
 
+/* Filters Section */
+.filtersSection {
+  margin-bottom: 24px;
+}
+
+.filtersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filterActions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
 .timeRangeButtons {
   display: flex;
   gap: 8px;
@@ -446,7 +467,7 @@
   color: #8E8E93;
 }
 
-.dark .timeRangeButtons, .dark .tabs {
+.dark .timeRangeButtons, .dark .tabs, .dark .filtersGrid {
   background: #2C2C2E;
 }
 
@@ -541,6 +562,11 @@
 
   .chartsGrid, .analyticsGrid, .detailedCharts {
     grid-template-columns: 1fr;
+  }
+
+  .filtersGrid {
+    grid-template-columns: 1fr;
+    padding: 16px;
   }
 
   .tabs {

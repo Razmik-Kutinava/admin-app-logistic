@@ -1,7 +1,7 @@
 import { onMount, createSignal, createEffect } from 'solid-js';
 import type { JSX } from 'solid-js';
 import { useParams, useNavigate } from '@solidjs/router';
-import { Card, Badge, Chart, Button, Table } from '../components/UI';
+import { Card, Badge, Chart, Button, Table, Select } from '../components/UI';
 import { MapView } from '../components/Map';
 import { driversStore } from '../stores';
 import type { DriverWithStats } from '../types/driver';
@@ -14,6 +14,8 @@ function DriverPage(): JSX.Element {
   const [loading, setLoading] = createSignal(true);
   const [activeTab, setActiveTab] = createSignal<'overview' | 'analytics' | 'routes' | 'history'>('overview');
   const [timeRange, setTimeRange] = createSignal<'today' | 'week' | 'month'>('today');
+  const [filterStatus, setFilterStatus] = createSignal<string>('');
+  const [filterRegion, setFilterRegion] = createSignal<string>('');
 
   onMount(() => {
     loadDriverData();
@@ -22,6 +24,20 @@ function DriverPage(): JSX.Element {
   createEffect(() => {
     if (driversStore.drivers().length > 0) {
       loadDriverData();
+    }
+  });
+
+  // Эффект для фильтрации данных
+  createEffect(() => {
+    const currentDriver = driver();
+    if (currentDriver) {
+      // Здесь можно добавить логику фильтрации данных
+      // Например, обновление статистики в зависимости от выбранного периода
+      console.log('Фильтры обновлены:', {
+        timeRange: timeRange(),
+        filterStatus: filterStatus(),
+        filterRegion: filterRegion()
+      });
     }
   });
 
@@ -156,6 +172,50 @@ function DriverPage(): JSX.Element {
           >
             📈 Месяц
           </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div class={styles.filtersSection}>
+        <div class={styles.filtersGrid}>
+          <Select
+            label="Статус водителя"
+            value={filterStatus()}
+            onChange={(value) => setFilterStatus(value)}
+            options={[
+              { value: '', label: 'Все статусы' },
+              { value: 'ONLINE', label: 'Онлайн' },
+              { value: 'OFFLINE', label: 'Офлайн' },
+              { value: 'IDLE', label: 'Простой' },
+              { value: 'DRIVING', label: 'В пути' }
+            ]}
+            fullWidth
+          />
+          <Select
+            label="Регион"
+            value={filterRegion()}
+            onChange={(value) => setFilterRegion(value)}
+            options={[
+              { value: '', label: 'Все регионы' },
+              { value: 'erevan', label: 'Ереван' },
+              { value: 'gyumri', label: 'Гюмри' },
+              { value: 'vanadzor', label: 'Ванадзор' },
+              { value: 'other', label: 'Другие' }
+            ]}
+            fullWidth
+          />
+          <div class={styles.filterActions}>
+            <Button 
+              onClick={() => {
+                setFilterStatus('');
+                setFilterRegion('');
+              }}
+              variant="ghost"
+              size="small"
+            >
+              🔄 Сбросить фильтры
+            </Button>
+          </div>
         </div>
       </div>
 
