@@ -147,6 +147,16 @@
   border-radius: 8px;
   margin-bottom: 12px;
   align-items: flex-start;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.alertItem:hover {
+  background: #FFF5E6;
+  border-color: #FF9500;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.15);
 }
 
 .alertIcon {
@@ -174,6 +184,13 @@
 .alertTime {
   font-size: 12px;
   color: #8E8E93;
+}
+
+.alertDriver {
+  font-size: 12px;
+  color: #007AFF;
+  margin: 4px 0 0 0;
+  font-weight: 500;
 }
 
 .alertActions {

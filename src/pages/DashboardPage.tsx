@@ -1,17 +1,18 @@
-import { onMount, onCleanup, createSignal, createEffect } from 'solid-js';
+import { onMount, onCleanup, createSignal } from 'solid-js';
 import type { JSX } from 'solid-js';
-import { useNavigate } from '@solidjs/router';
 import { Card, Badge, Chart, Table, Input, Select, Button, QuickFilters } from '../components/UI';
 import { MapView } from '../components/Map';
 import { PeriodComparison } from '../components/Analytics';
-import DriverDetailModal from '../components/Driver/DriverDetailModal';
+import { DriverDetailModal, DriverMapModal } from '../components/Driver';
+import { AlertDetailModal } from '../components/Alert';
 import { metricsStore, driversStore, alertsStore } from '../stores';
+import { districtsStore } from '../stores/districtsStore';
 import { exportDriversData, exportAnalyticsData, showExportNotification } from '../utils/export';
 import type { DriverWithStats } from '../types/driver';
+import type { AlertWithDetails } from '../types/alert';
 import styles from './DashboardPage.module.css';
 
 function DashboardPage(): JSX.Element {
-  const navigate = useNavigate();
   
   // Search and filter states
   const [searchQuery, setSearchQuery] = createSignal('');
@@ -29,13 +30,21 @@ function DashboardPage(): JSX.Element {
   const [selectedDriver, setSelectedDriver] = createSignal<DriverWithStats | null>(null);
   const [isModalOpen, setIsModalOpen] = createSignal(false);
 
-  // Debug modal state
-  createEffect(() => {
-    console.log('🔍 Modal state:', {
-      isModalOpen: isModalOpen(),
-      selectedDriver: selectedDriver()?.firstName
-    });
-  });
+  // Alert modal state
+  const [selectedAlert, setSelectedAlert] = createSignal<AlertWithDetails | null>(null);
+  const [isAlertModalOpen, setIsAlertModalOpen] = createSignal(false);
+
+  // Driver map modal state
+  const [selectedDriverForMap, setSelectedDriverForMap] = createSignal<DriverWithStats | null>(null);
+  const [isMapModalOpen, setIsMapModalOpen] = createSignal(false);
+
+  // Debug modal state (commented out for production)
+  // createEffect(() => {
+  //   console.log('🔍 Modal state:', {
+  //     isModalOpen: isModalOpen(),
+  //     selectedDriver: selectedDriver()?.first_name
+  //   });
+  // });
 
 
   // Filtered drivers
@@ -46,8 +55,8 @@ function DashboardPage(): JSX.Element {
     if (searchQuery()) {
       const query = searchQuery().toLowerCase();
       result = result.filter(driver => 
-        driver.firstName.toLowerCase().includes(query) ||
-        driver.lastName.toLowerCase().includes(query) ||
+        driver.first_name.toLowerCase().includes(query) ||
+        driver.last_name.toLowerCase().includes(query) ||
         driver.phone.includes(query)
       );
     }
@@ -57,9 +66,11 @@ function DashboardPage(): JSX.Element {
       result = result.filter(driver => driver.status === filterStatus());
     }
     
-    // Filter by region
+    // Filter by region/district
     if (filterRegion()) {
-      result = result.filter(driver => driver.regionCode === filterRegion());
+      result = result.filter(driver => 
+        (driver.district?.name_ru || driver.region) === filterRegion()
+      );
     }
     
     return result;
@@ -88,56 +99,87 @@ function DashboardPage(): JSX.Element {
     showExportNotification('csv');
   };
 
-  const quickFilters = () => [
-    {
-      key: 'ONLINE',
-      label: 'Онлайн',
-      icon: '🟢',
-      count: driversStore.drivers().filter(d => d.status === 'ONLINE').length,
-      active: filterStatus() === 'ONLINE'
-    },
-    {
-      key: 'IDLE',
-      label: 'Простой',
-      icon: '🟡',
-      count: driversStore.drivers().filter(d => d.status === 'IDLE').length,
-      active: filterStatus() === 'IDLE'
-    },
-    {
-      key: 'DRIVING',
-      label: 'В пути',
-      icon: '🔵',
-      count: driversStore.drivers().filter(d => d.status === 'DRIVING').length,
-      active: filterStatus() === 'DRIVING'
-    },
-    {
-      key: 'AM',
-      label: 'Армения',
-      icon: '🇦🇲',
-      count: driversStore.drivers().filter(d => d.regionCode === 'AM').length,
-      active: filterRegion() === 'AM'
-    },
-    {
-      key: 'US',
-      label: 'США',
-      icon: '🇺🇸',
-      count: driversStore.drivers().filter(d => d.regionCode === 'US').length,
-      active: filterRegion() === 'US'
-    },
-    {
-      key: 'CN',
-      label: 'Китай',
-      icon: '🇨🇳',
-      count: driversStore.drivers().filter(d => d.regionCode === 'CN').length,
-      active: filterRegion() === 'CN'
-    }
-  ];
+  const getDistrictIcon = (districtName: string) => {
+    const icons: Record<string, string> = {
+      'Кентрон': '🏛️',
+      'Арабкир': '🏢',
+      'Аван': '🏘️',
+      'Эребуни': '🏭',
+      'Малатия-Себастия': '🏘️',
+      'Шенгавит': '🏭',
+      'Нор-Норк': '🏘️',
+      'Ачапняк': '🏢',
+      'Давиташен': '🏘️',
+      'Канакер-Зейтун': '🏭',
+      'Норк-Мараш': '🏘️',
+      'Нубарашен': '🏢'
+    };
+    return icons[districtName] || '🏘️';
+  };
+
+  const quickFilters = () => {
+    const drivers = driversStore.drivers();
+    
+    // Получаем уникальные районы из водителей
+    const districts = [...new Set(drivers.map(d => d.district?.name_ru || d.region).filter(Boolean))];
+    
+    return [
+      {
+        key: 'ONLINE',
+        label: 'Онлайн',
+        icon: '🟢',
+        count: drivers.filter(d => d.status === 'ONLINE').length,
+        active: filterStatus() === 'ONLINE'
+      },
+      {
+        key: 'IDLE',
+        label: 'Простой',
+        icon: '🟡',
+        count: drivers.filter(d => d.status === 'IDLE').length,
+        active: filterStatus() === 'IDLE'
+      },
+      {
+        key: 'DRIVING',
+        label: 'В пути',
+        icon: '🔵',
+        count: drivers.filter(d => d.status === 'DRIVING').length,
+        active: filterStatus() === 'DRIVING'
+      },
+      {
+        key: 'ALL_DISTRICTS',
+        label: 'Все районы',
+        icon: '🌐',
+        count: drivers.length,
+        active: filterRegion() === null
+      },
+      // Динамически генерируемые фильтры по районам
+      ...districts.filter(Boolean).map(districtName => ({
+        key: districtName!,
+        label: districtName!,
+        icon: getDistrictIcon(districtName!),
+        count: drivers.filter(d => (d.district?.name_ru || d.region) === districtName).length,
+        active: filterRegion() === districtName
+      }))
+    ];
+  };
 
   const handleQuickFilterClick = (key: string) => {
     if (['ONLINE', 'IDLE', 'OFFLINE', 'DRIVING'].includes(key)) {
-      setFilterStatus(key);
+      // Для статусов - переключаем (если уже выбран, то сбрасываем)
+      if (filterStatus() === key) {
+        setFilterStatus(null);
+      } else {
+        setFilterStatus(key);
+      }
+    } else if (key === 'ALL_DISTRICTS') {
+      setFilterRegion(null); // Сброс фильтра по районам
     } else {
-      setFilterRegion(key);
+      // Для районов - переключаем (если уже выбран, то сбрасываем)
+      if (filterRegion() === key) {
+        setFilterRegion(null);
+      } else {
+        setFilterRegion(key);
+      }
     }
   };
 
@@ -148,23 +190,51 @@ function DashboardPage(): JSX.Element {
   };
 
   const handleDriverClick = (driver: DriverWithStats) => {
-    console.log('🔍 Opening modal for driver:', driver.firstName);
-    console.log('🔍 Setting modal state:', {
-      driverId: driver.id,
-      driverName: driver.firstName,
-      willSetModalOpen: true
-    });
+    // console.log('🔍 Opening modal for driver:', driver.first_name);
+    // console.log('🔍 Setting modal state:', {
+    //   driverId: driver.id,
+    //   driverName: driver.first_name,
+    //   willSetModalOpen: true
+    // });
     setSelectedDriver(driver);
     setIsModalOpen(true);
   };
 
-  const handleDriverDetail = (driver: DriverWithStats) => {
-    navigate(`/driver/${driver.id}`);
-  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedDriver(null);
+  };
+
+  // Alert handlers
+  const handleAlertClick = (alert: AlertWithDetails) => {
+    setSelectedAlert(alert);
+    setIsAlertModalOpen(true);
+  };
+
+  const handleCloseAlertModal = () => {
+    setIsAlertModalOpen(false);
+    setSelectedAlert(null);
+  };
+
+  const handleAcknowledgeAlert = async (alertId: string) => {
+    try {
+      await alertsStore.acknowledgeAlert(alertId);
+      // Алерт автоматически удалится из списка благодаря обновлению состояния
+    } catch (error) {
+      console.error('Ошибка при закрытии алерта:', error);
+    }
+  };
+
+  // Driver map handlers
+  const handleDriverMapClick = (driver: DriverWithStats) => {
+    setSelectedDriverForMap(driver);
+    setIsMapModalOpen(true);
+  };
+
+  const handleCloseMapModal = () => {
+    setIsMapModalOpen(false);
+    setSelectedDriverForMap(null);
   };
 
   onMount(() => {
@@ -173,6 +243,7 @@ function DashboardPage(): JSX.Element {
     metricsStore.fetchOperationsStats();
     driversStore.fetchDrivers();
     alertsStore.fetchAlerts();
+    districtsStore.fetchDistricts();
 
     // Включаем автообновление
     metricsStore.startMetricsUpdate();
@@ -186,6 +257,27 @@ function DashboardPage(): JSX.Element {
       document.documentElement.classList.add('dark');
     }
   });
+
+  // Глобальные функции для popup кнопок карты
+  (window as any).callDriver = (phone: string) => {
+    window.open(`tel:${phone}`, '_self');
+  };
+
+  (window as any).messageDriver = (driverId: string) => {
+    const driver = driversStore.drivers().find(d => d.id === driverId);
+    if (driver) {
+      const message = `Привет, ${driver.first_name}! Как дела с доставками?`;
+      const encodedMessage = encodeURIComponent(message);
+      window.open(`https://wa.me/374${driver.phone.replace(/\D/g, '')}?text=${encodedMessage}`, '_blank');
+    }
+  };
+
+  (window as any).showDriverDetails = (driverId: string) => {
+    const driver = driversStore.drivers().find(d => d.id === driverId);
+    if (driver) {
+      handleDriverClick(driver);
+    }
+  };
 
   onCleanup(() => {
     // Останавливаем обновления
@@ -317,11 +409,10 @@ function DashboardPage(): JSX.Element {
             </div>
             <div class={styles.filters}>
               <Select
-                placeholder="Все статусы"
-                value={filterStatus()}
-                onChange={(value) => setFilterStatus(value)}
+                value={filterStatus() || undefined}
+                onChange={(value) => setFilterStatus(value === '' ? null : value)}
                 options={[
-                  { value: null, label: 'Все статусы' },
+                  { value: '', label: 'Все статусы' },
                   { value: 'ONLINE', label: 'Онлайн' },
                   { value: 'OFFLINE', label: 'Офлайн' },
                   { value: 'IDLE', label: 'Простой' },
@@ -329,14 +420,18 @@ function DashboardPage(): JSX.Element {
                 ]}
               />
               <Select
-                placeholder="Все регионы"
-                value={filterRegion()}
-                onChange={(value) => setFilterRegion(value)}
+                value={filterRegion() || undefined}
+                onChange={(value) => setFilterRegion(value === '' ? null : value)}
                 options={[
-                  { value: null, label: 'Все регионы' },
-                  { value: 'AM', label: 'Армения' },
-                  { value: 'US', label: 'США' },
-                  { value: 'CN', label: 'Китай' }
+                  { value: '', label: 'Все районы' },
+                  ...driversStore.drivers()
+                    .map(d => d.district?.name_ru || d.region)
+                    .filter(Boolean)
+                    .filter((value, index, self) => self.indexOf(value) === index) // уникальные значения
+                    .map(districtName => ({
+                      value: districtName || '',
+                      label: districtName || ''
+                    }))
                 ]}
               />
             </div>
@@ -376,23 +471,24 @@ function DashboardPage(): JSX.Element {
               </div>
                      <Table
                        columns={[
-                         { key: 'name', title: 'Водитель', width: '25%' },
-                         { key: 'status', title: 'Статус', width: '15%' },
-                         { key: 'addresses', title: 'Адреса', width: '15%' },
-                         { key: 'distance', title: 'Км', width: '10%' },
-                         { key: 'phone', title: 'Телефон', width: '15%' },
-                         { key: 'actions', title: 'Действия', width: '20%' }
+                         { key: 'name', header: 'Водитель', width: '20%' },
+                         { key: 'region', header: 'Район', width: '15%' },
+                         { key: 'status', header: 'Статус', width: '12%' },
+                         { key: 'addresses', header: 'Адреса', width: '12%' },
+                         { key: 'distance', header: 'Км', width: '10%' },
+                         { key: 'phone', header: 'Телефон', width: '14%' },
+                         { key: 'actions', header: 'Действия', width: '17%' }
                        ]}
                        data={filteredDrivers().map(driver => ({
                          name: () => (
                            <button 
                              class={styles.driverNameBtn}
                              onClick={() => handleDriverClick(driver)}
-                             title="Открыть детали"
                            >
-                             {driver.firstName} {driver.lastName}
+                             {driver.first_name} {driver.last_name}
                            </button>
                          ),
+                         region: driver.district?.name_ru || driver.region || 'Не указан',
                          status: () => <Badge status={driver.status} size="small" />,
                          addresses: `${driver.todayStats?.deliveredStops || 0}/${driver.todayStats?.totalStops || 0}`,
                          distance: (driver.todayStats?.distanceKm || 0).toFixed(1),
@@ -401,29 +497,20 @@ function DashboardPage(): JSX.Element {
                            <div class={styles.actionButtons}>
                              <button 
                                class={styles.actionBtn} 
-                               title="Позвонить"
                                onClick={() => window.open(`tel:${driver.phone}`, '_self')}
                              >
                                📞
                              </button>
                              <button 
                                class={styles.actionBtn} 
-                               title="Написать"
-                               onClick={() => alert(`Отправка сообщения ${driver.firstName}`)}
+                               onClick={() => alert(`Отправка сообщения ${driver.first_name}`)}
                              >
                                💬
                              </button>
                              <button 
                                class={styles.actionBtn} 
-                               title="Детальная страница"
-                               onClick={() => handleDriverDetail(driver)}
-                             >
-                               👁️
-                             </button>
-                             <button 
-                               class={styles.actionBtn} 
-                               title="На карте"
-                               onClick={() => alert(`Показать ${driver.firstName} на карте`)}
+                               onClick={() => handleDriverMapClick(driver)}
+                               title="Показать на карте"
                              >
                                🗺️
                              </button>
@@ -444,23 +531,45 @@ function DashboardPage(): JSX.Element {
               </div>
             ) : (
               alertsStore.unacknowledgedAlerts().map((alert) => (
-                <div class={styles.alertItem}>
+                <div class={styles.alertItem} onClick={() => handleAlertClick(alert)}>
                   <div class={styles.alertIcon}>
-                    <Badge status={alert.severity} size="small" />
+                    <Badge 
+                      status={alert.severity === 'CRITICAL' ? 'error' : 
+                             alert.severity === 'WARNING' ? 'warning' : 'info'} 
+                      size="small" 
+                    />
                   </div>
                   <div class={styles.alertContent}>
-                    <h4 class={styles.alertTitle}>{alert.title}</h4>
-                    <p class={styles.alertMessage}>{alert.message}</p>
+                    <h4 class={styles.alertTitle}>{alert.message}</h4>
                     <p class={styles.alertTime}>
                       {new Date(alert.created_at).toLocaleTimeString('ru-RU')}
                     </p>
+                    {alert.driver && (
+                      <p class={styles.alertDriver}>
+                        👤 {alert.driver.first_name} {alert.driver.last_name}
+                      </p>
+                    )}
                   </div>
                   <div class={styles.alertActions}>
-                    <button class={styles.alertBtn} title="Закрыть алёрт">
-                      ✅
+                    <button 
+                      class={styles.alertBtn} 
+                      title="Подробнее"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAlertClick(alert);
+                      }}
+                    >
+                      👁️
                     </button>
-                    <button class={styles.alertBtn} title="Позвонить">
-                      📞
+                    <button 
+                      class={styles.alertBtn} 
+                      title="Закрыть алёрт"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        await handleAcknowledgeAlert(alert.id);
+                      }}
+                    >
+                      ✅
                     </button>
                   </div>
                 </div>
@@ -492,6 +601,8 @@ function DashboardPage(): JSX.Element {
             drivers={filteredDrivers()}
             showTracks={showTracks()}
             showClusters={showClusters()}
+            showRoutes={showTracks()}
+            onDriverClick={handleDriverClick}
           />
         </Card>
       </div>
@@ -567,6 +678,23 @@ function DashboardPage(): JSX.Element {
                  driver={selectedDriver()}
                  isOpen={isModalOpen()}
                  onClose={handleCloseModal}
+               />
+             )}
+
+             {isAlertModalOpen() && selectedAlert() && (
+               <AlertDetailModal 
+                 alert={selectedAlert()}
+                 isOpen={isAlertModalOpen()}
+                 onClose={handleCloseAlertModal}
+                 onAcknowledge={handleAcknowledgeAlert}
+               />
+             )}
+
+             {isMapModalOpen() && selectedDriverForMap() && (
+               <DriverMapModal 
+                 driver={selectedDriverForMap()}
+                 isOpen={isMapModalOpen()}
+                 onClose={handleCloseMapModal}
                />
              )}
 

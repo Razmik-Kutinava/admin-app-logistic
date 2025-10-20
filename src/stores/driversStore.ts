@@ -4,7 +4,7 @@ import { mockDrivers } from './mockData';
 import { supabase } from '../lib/supabase';
 
 // ===== MOCK MODE - БЕЗ SUPABASE =====
-const MOCK_MODE = false;
+const MOCK_MODE = true; // Временно включено для тестирования
 
 // ===== Signals =====
 const [drivers, setDrivers] = createSignal<DriverWithStats[]>(MOCK_MODE ? mockDrivers : []);
@@ -22,8 +22,8 @@ export const filteredDrivers = () => {
   
   if (filterRegion()) {
     result = result.filter(d => {
-      // Assuming we have hub data joined
-      return true; // TODO: Add region filter logic
+      // Filter by region
+      return d.region === filterRegion();
     });
   }
   
@@ -73,16 +73,40 @@ export async function fetchDrivers() {
     
     if (driversError) throw driversError;
     
+    // Загружаем районы отдельно
+    const { data: districtsData } = await supabase
+      .from('yerevan_districts')
+      .select('*');
+    
+    // Создаем мапу районов
+    const districtsMap = new Map();
+    districtsData?.forEach(district => {
+      districtsMap.set(district.id, district);
+    });
+    
     // Преобразуем данные из БД в DriverWithStats
     const driversWithStats: DriverWithStats[] = (driversData || []).map((driver) => ({
+      // Основные поля Driver
       id: driver.id,
-      firstName: driver.first_name,
-      lastName: driver.last_name,
+      first_name: driver.first_name,
+      last_name: driver.last_name,
       phone: driver.phone,
-      regionCode: driver.region_code,
-      hubCode: driver.hub_code,
-      vehicleId: driver.vehicle_id,
+      hub_id: driver.hub_id,
       status: driver.status as DriverStatus,
+      region: driver.region,
+      created_at: driver.created_at,
+      
+      // Поля DriverWithStats
+      completed_stops: Math.floor(Math.random() * 15) + 5, // 5-20 адресов
+      total_stops: Math.floor(Math.random() * 20) + 10, // 10-30 адресов
+      total_km: Math.floor(Math.random() * 100) + 20, // 20-120 км
+      idle_minutes: Math.floor(Math.random() * 60) + 15, // 15-75 минут
+      online_minutes: Math.floor(Math.random() * 480) + 120, // 2-8 часов
+      issues_count: Math.floor(Math.random() * 3), // 0-2 проблемы
+      fuel_used: Math.floor(Math.random() * 50) + 10, // 10-60 литров
+      
+      // Дополнительные поля
+      district: districtsMap.get(driver.district_id) || null,
       todayStats: {
         deliveredStops: Math.floor(Math.random() * 15) + 5, // 5-20 адресов
         totalStops: Math.floor(Math.random() * 20) + 10, // 10-30 адресов
@@ -91,8 +115,7 @@ export async function fetchDrivers() {
         fuelLiters: Math.floor(Math.random() * 50) + 10, // 10-60 литров
         issuesCount: Math.floor(Math.random() * 3) // 0-2 проблемы
       },
-      lastSeen: driver.last_seen || new Date().toISOString(),
-      createdAt: driver.created_at
+      lastSeen: driver.last_seen || new Date().toISOString()
     }));
     
     console.log('✅ Загружено водителей из Supabase:', driversWithStats.length);

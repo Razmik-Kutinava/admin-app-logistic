@@ -140,6 +140,16 @@ function Chart(props: ChartProps): JSX.Element {
   const initChart = () => {
     if (!chartContainer) return;
 
+    // Проверяем, что контейнер имеет размеры
+    const rect = chartContainer.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      // Если размеры еще не готовы, ждем следующий кадр
+      requestAnimationFrame(() => {
+        initChart();
+      });
+      return;
+    }
+
     chartInstance = echarts.init(chartContainer);
     
     const options = {
@@ -161,8 +171,20 @@ function Chart(props: ChartProps): JSX.Element {
     chartInstance.setOption(options, true);
   };
 
+  const handleResize = () => {
+    if (chartInstance) {
+      chartInstance.resize();
+    }
+  };
+
   onMount(() => {
-    initChart();
+    // Добавляем небольшую задержку для модальных окон
+    setTimeout(() => {
+      initChart();
+    }, 100);
+    
+    // Добавляем обработчик изменения размера
+    window.addEventListener('resize', handleResize);
   });
 
   createEffect(() => {
@@ -170,6 +192,7 @@ function Chart(props: ChartProps): JSX.Element {
   });
 
   onCleanup(() => {
+    window.removeEventListener('resize', handleResize);
     if (chartInstance) {
       chartInstance.dispose();
     }

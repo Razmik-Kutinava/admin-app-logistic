@@ -1,9 +1,15 @@
-.mapContainer {
+.mapWrapper {
+  position: relative;
   height: 400px;
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mapContainer {
+  height: 100%;
+  width: 100%;
 }
 
 .driverMarker {
@@ -92,6 +98,79 @@
 }
 
 .dark .popupBtn:hover {
+  background: #007AFF;
+  color: white;
+}
+
+/* Route arrows */
+.routeArrow {
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Cluster styles */
+.markerClusterGroup {
+  background: rgba(0, 122, 255, 0.1);
+  border: 2px solid #007AFF;
+  border-radius: 50%;
+  color: #007AFF;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Map controls */
+.mapControls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mapControlBtn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+
+.mapControlBtn:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.mapControlBtn.active {
+  background: #007AFF;
+  color: white;
+}
+
+/* Dark theme for map controls */
+.dark .mapControlBtn {
+  background: #2C2C2E;
+  color: #F2F2F7;
+}
+
+.dark .mapControlBtn:hover {
+  background: #3A3A3C;
+}
+
+.dark .mapControlBtn.active {
   background: #007AFF;
   color: white;
 }

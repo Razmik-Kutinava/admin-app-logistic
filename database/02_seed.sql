@@ -7,17 +7,13 @@
 -- ===== 1. REGIONS =====
 
 INSERT INTO regions (code, name_ru, timezone) VALUES
-('AM', 'Армения', 'Asia/Yerevan'),
-('US', 'США', 'America/New_York'),
-('CN', 'Китай', 'Asia/Shanghai')
+('AM', 'Армения', 'Asia/Yerevan')
 ON CONFLICT (code) DO NOTHING;
 
 -- ===== 2. HUBS =====
 
 INSERT INTO hubs (region_id, name, address, lat, lon) VALUES
-((SELECT id FROM regions WHERE code = 'AM'), 'Ереван Центральный', 'ул. Абовяна 10, Ереван', 40.1776, 44.5126),
-((SELECT id FROM regions WHERE code = 'US'), 'New York Hub', '123 Main St, New York, NY', 40.7128, -74.0060),
-((SELECT id FROM regions WHERE code = 'CN'), 'Shanghai Hub', 'Nanjing Rd, Shanghai', 31.2304, 121.4737);
+((SELECT id FROM regions WHERE code = 'AM'), 'Ереван Центральный', 'ул. Абовяна 10, Ереван', 40.1776, 44.5126);
 
 -- ===== 3. VEHICLES =====
 
@@ -35,17 +31,14 @@ INSERT INTO vehicles (plate_number, model, year, hub_id, last_maintenance_km) VA
 
 -- ===== 4. DRIVERS =====
 
-INSERT INTO drivers (first_name, last_name, phone, hub_id, status) VALUES
-('Арам', 'Петросян', '+374-91-123456', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'ONLINE'),
-('Гарик', 'Саркисян', '+374-91-234567', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'DRIVING'),
-('Ваге', 'Аветисян', '+374-91-345678', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'IDLE'),
-('Давид', 'Мартиросян', '+374-91-456789', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'ONLINE'),
-('Сурен', 'Григорян', '+374-91-567890', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'OFFLINE'),
-('Тигран', 'Акопян', '+374-91-678901', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'DRIVING'),
-('Армен', 'Овсепян', '+374-91-789012', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'ONLINE'),
-('Левон', 'Варданян', '+374-91-890123', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'IDLE'),
-('Карен', 'Мкртчян', '+374-91-901234', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'DRIVING'),
-('Арсен', 'Асатрян', '+374-91-012345', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'ONLINE');
+INSERT INTO drivers (first_name, last_name, phone, hub_id, status, region) VALUES
+('Арам', 'Петросян', '+374-91-123456', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'ONLINE', 'Кентрон'),
+('Гарик', 'Саркисян', '+374-91-234567', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'DRIVING', 'Арабкир'),
+('Ваге', 'Аветисян', '+374-91-345678', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'IDLE', 'Аван'),
+('Давид', 'Мартиросян', '+374-91-456789', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'ONLINE', 'Эребуни'),
+('Сурен', 'Григорян', '+374-91-567890', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'OFFLINE', 'Малатия-Себастия'),
+('Тигран', 'Акопян', '+374-91-678901', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'DRIVING', 'Шенгавит'),
+('Армен', 'Овсепян', '+374-91-789012', (SELECT id FROM hubs WHERE name = 'Ереван Центральный'), 'ONLINE', 'Нор-Норк');
 
 -- ===== 5. CLIENTS =====
 
@@ -125,14 +118,14 @@ BEGIN
   )
   RETURNING id INTO route4_id;
   
-  -- Add stops for route 1 (sample stops)
+  -- Add stops for route 1 (Кентрон - Арам Петросян)
   INSERT INTO stops (route_id, client_id, seq, address, lat, lon, planned_ts, status, completed_at, idle_minutes)
   VALUES
-  (route1_id, (SELECT id FROM clients WHERE name = 'Zara Armenia'), 1, 'ул. Туманяна 23, Ереван', 40.1810, 44.5144, today + TIME '09:00:00', 'DELIVERED', today + TIME '09:15:00', 5),
-  (route1_id, (SELECT id FROM clients WHERE name = 'Yerevan Mall'), 2, 'ул. Арами 51, Ереван', 40.1725, 44.5220, today + TIME '09:30:00', 'DELIVERED', today + TIME '09:50:00', 8),
-  (route1_id, (SELECT id FROM clients WHERE name = 'Dalma Garden'), 3, 'пр. Тбилисян 67, Ереван', 40.1800, 44.5000, today + TIME '10:00:00', 'DELIVERED', today + TIME '10:20:00', 12),
-  (route1_id, (SELECT id FROM clients WHERE name = 'Carrefour Armenia'), 4, 'ул. Рафаэля 23, Ереван', 40.1750, 44.5180, today + TIME '10:30:00', 'IN_PROGRESS', NULL, 0),
-  (route1_id, (SELECT id FROM clients WHERE name = 'Rossia Mall'), 5, 'ул. Саят-Новы 1, Ереван', 40.1780, 44.5160, today + TIME '11:00:00', 'PLANNED', NULL, 0);
+  (route1_id, (SELECT id FROM clients WHERE name = 'Zara Armenia'), 1, 'ул. Абовяна 15, Кентрон', 40.1810, 44.5144, today + TIME '09:00:00', 'DELIVERED', today + TIME '09:15:00', 5),
+  (route1_id, (SELECT id FROM clients WHERE name = 'Yerevan Mall'), 2, 'пр. Маштоца 28, Кентрон', 40.1725, 44.5220, today + TIME '09:30:00', 'DELIVERED', today + TIME '09:50:00', 8),
+  (route1_id, (SELECT id FROM clients WHERE name = 'Dalma Garden'), 3, 'ул. Туманяна 42, Кентрон', 40.1800, 44.5000, today + TIME '10:00:00', 'DELIVERED', today + TIME '10:20:00', 12),
+  (route1_id, (SELECT id FROM clients WHERE name = 'Carrefour Armenia'), 4, 'ул. Саят-Новы 1, Кентрон', 40.1750, 44.5180, today + TIME '10:30:00', 'IN_PROGRESS', NULL, 0),
+  (route1_id, (SELECT id FROM clients WHERE name = 'Rossia Mall'), 5, 'ул. Налбандяна 23, Кентрон', 40.1780, 44.5160, today + TIME '11:00:00', 'PLANNED', NULL, 0);
   
   -- Add some GPS tracks for active drivers
   INSERT INTO gps_tracks (driver_id, vehicle_id, ts, lat, lon, speed)

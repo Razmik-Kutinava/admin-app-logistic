@@ -11,13 +11,13 @@ interface DriverDetailModalProps {
 }
 
 function DriverDetailModal(props: DriverDetailModalProps): JSX.Element {
-  // Debug props
-  console.log('🔍 DriverDetailModal render check:', {
-    hasDriver: !!props.driver,
-    isOpen: props.isOpen,
-    shouldRender: !!(props.driver && props.isOpen),
-    driverName: props.driver?.firstName
-  });
+  // Debug props (commented out for production)
+  // console.log('🔍 DriverDetailModal render check:', {
+  //   hasDriver: !!props.driver,
+  //   isOpen: props.isOpen,
+  //   shouldRender: !!(props.driver && props.isOpen),
+  //   driverName: props.driver?.first_name
+  // });
 
   const [activeTab, setActiveTab] = createSignal<'overview' | 'stats' | 'routes'>('overview');
 
@@ -56,12 +56,12 @@ function DriverDetailModal(props: DriverDetailModalProps): JSX.Element {
 
   const handleMessage = () => {
     // TODO: Интеграция с мессенджером
-    alert(`Отправка сообщения водителю ${driver.firstName} ${driver.lastName}`);
+    alert(`Отправка сообщения водителю ${driver.first_name} ${driver.last_name}`);
   };
 
   const handleShowOnMap = () => {
     // TODO: Показать водителя на карте
-    alert(`Показать ${driver.firstName} на карте`);
+    alert(`Показать ${driver.first_name} на карте`);
   };
 
   return (
@@ -80,21 +80,21 @@ function DriverDetailModal(props: DriverDetailModalProps): JSX.Element {
         <div class={styles.header}>
           <div class={styles.driverInfo}>
             <div class={styles.avatar}>
-              {driver.firstName.charAt(0)}{driver.lastName.charAt(0)}
+              {driver.first_name?.charAt(0) || '?'}{driver.last_name?.charAt(0) || '?'}
             </div>
             <div class={styles.driverDetails}>
               <h2 class={styles.driverName}>
-                {driver.firstName} {driver.lastName}
+                {driver.first_name || 'Неизвестно'} {driver.last_name || 'Неизвестно'}
               </h2>
               <div class={styles.driverMeta}>
                 <span class={styles.phone}>📞 {driver.phone}</span>
-                <span class={styles.region}>🌍 {driver.regionCode}</span>
-                <span class={styles.hub}>🏢 {driver.hubCode}</span>
+                <span class={styles.region}>🌍 {driver.region || 'Неизвестно'}</span>
+                <span class={styles.hub}>🏢 {driver.hub_id || 'Неизвестно'}</span>
               </div>
               <div class={styles.statusRow}>
                 <Badge status={driver.status} size="medium" />
                 <span class={styles.lastSeen}>
-                  Последний раз онлайн: {new Date(driver.lastSeen).toLocaleTimeString('ru-RU')}
+                  Последний раз онлайн: {driver.lastSeen ? new Date(driver.lastSeen).toLocaleTimeString('ru-RU') : 'Неизвестно'}
                 </span>
               </div>
             </div>
@@ -170,7 +170,7 @@ function DriverDetailModal(props: DriverDetailModalProps): JSX.Element {
               </div>
 
               <div class={styles.activityChart}>
-                <h3>Активность по часам</h3>
+                <h3>📊 Активность по часам</h3>
                 <Chart 
                   type="line"
                   data={[2, 3, 5, 8, 12, 15, 18, 20, 22, 25, 28, 30, 32, 35, 38, 40, 42, 45, 48, 50, 52, 55, 58, 60]}
@@ -232,7 +232,7 @@ function DriverDetailModal(props: DriverDetailModalProps): JSX.Element {
 
               <div class={styles.chartsGrid}>
                 <div class={styles.chartCard}>
-                  <h4>Пробег по дням</h4>
+                  <h4>🛣️ Пробег по дням</h4>
                   <Chart 
                     type="bar"
                     data={[45, 52, 38, 67, 58, 43, 61]}
@@ -246,7 +246,7 @@ function DriverDetailModal(props: DriverDetailModalProps): JSX.Element {
                   />
                 </div>
                 <div class={styles.chartCard}>
-                  <h4>Простой по дням</h4>
+                  <h4>⏱️ Простой по дням</h4>
                   <Chart 
                     type="line"
                     data={[35, 42, 28, 55, 38, 33, 45]}

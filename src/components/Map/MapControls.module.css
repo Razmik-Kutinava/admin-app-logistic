@@ -1,0 +1,147 @@
+.mapControls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mainBtn {
+  background: linear-gradient(135deg, #007AFF, #5856D6);
+  color: white;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.mainBtn:hover {
+  background: linear-gradient(135deg, #0056CC, #4A48C4);
+  transform: scale(1.05);
+}
+
+.controlsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mapControlBtn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.mapControlBtn:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mapControlBtn.active {
+  background: #007AFF;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.mapControlBtn.active:hover {
+  background: #0056CC;
+}
+
+/* Tooltip styles */
+.mapControlBtn::after {
+  content: attr(title);
+  position: absolute;
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1001;
+}
+
+.mapControlBtn:hover::after {
+  opacity: 1;
+}
+
+/* Dark theme support */
+.dark .controlsPanel {
+  background: rgba(44, 44, 46, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .mapControlBtn {
+  background: #2C2C2E;
+  color: #F2F2F7;
+}
+
+.dark .mapControlBtn:hover {
+  background: #3A3A3C;
+}
+
+.dark .mapControlBtn.active {
+  background: #007AFF;
+  color: white;
+}
+
+.dark .mapControlBtn.active:hover {
+  background: #0056CC;
+}
+
+/* Animation for panel */
+.controlsPanel {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .mapControls {
+    top: 5px;
+    right: 5px;
+  }
+  
+  .mapControlBtn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+  
+  .mainBtn {
+    font-size: 18px;
+  }
+}
+

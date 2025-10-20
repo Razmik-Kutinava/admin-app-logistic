@@ -1,10 +1,10 @@
 import { createSignal } from 'solid-js';
-import type { Alert, AlertWithDetails, AlertType, AlertSeverity } from '../types/alert';
+import type { AlertWithDetails, AlertType, AlertSeverity } from '../types/alert';
 import { mockAlerts } from './mockData';
 import { supabase } from '../lib/supabase';
 
 // ===== MOCK MODE - БЕЗ SUPABASE =====
-const MOCK_MODE = false;
+const MOCK_MODE = true; // Временно включено для тестирования
 
 // ===== Signals =====
 const [alerts, setAlerts] = createSignal<AlertWithDetails[]>(MOCK_MODE ? mockAlerts : []);
@@ -45,9 +45,9 @@ export async function fetchAlerts() {
     setError(null);
     
     const { data: alertsData, error: alertsError } = await supabase
-      .from('alerts')
+      .from('logistic_alerts')
       .select('*')
-      .eq('acknowledged', false)
+      .eq('is_read', false)
       .order('created_at', { ascending: false });
     
     if (alertsError) throw alertsError;
@@ -55,20 +55,20 @@ export async function fetchAlerts() {
     // Преобразуем данные в AlertWithDetails
     const alertsWithDetails: AlertWithDetails[] = (alertsData || []).map((alert) => ({
       id: alert.id,
-      alert_type: alert.alert_type as AlertType,
+      alert_type: alert.type as AlertType,
       severity: alert.severity as AlertSeverity,
-      title: alert.title,
+      title: alert.title || alert.message,
       message: alert.message,
-      entity_type: alert.entity_type,
-      entity_id: alert.entity_id,
-      acknowledged: alert.acknowledged,
-      acknowledged_by: alert.acknowledged_by,
-      acknowledged_at: alert.acknowledged_at,
+      entity_type: alert.type,
+      entity_id: alert.driver_id || alert.route_id,
+      acknowledged: alert.is_read,
+      acknowledged_by: undefined,
+      acknowledged_at: undefined,
       created_at: alert.created_at,
       metadata: alert.metadata,
       // Details (пока без join)
-      entityName: null,
-      driverName: null
+      entityName: undefined,
+      driverName: undefined
     }));
     
     console.log('✅ Загружено алертов из Supabase:', alertsWithDetails.length);

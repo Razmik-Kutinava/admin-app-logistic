@@ -12,6 +12,7 @@ export interface Driver {
   phone: string;
   hub_id: string;
   status: DriverStatus;
+  region?: string;
   created_at: string;
 }
 
@@ -24,11 +25,30 @@ export interface DriverWithStats extends Driver {
   online_minutes: number;
   issues_count: number;
   fuel_used?: number;
+  district_id?: string;
   last_gps?: {
     lat: number;
     lon: number;
     ts: string;
   };
+  // District information
+  district?: {
+    id: string;
+    name_ru: string;
+    name_hy?: string;
+    center_lat: number;
+    center_lon: number;
+  };
+  // Today's stats (for UI)
+  todayStats?: {
+    deliveredStops: number;
+    totalStops: number;
+    idleTimeMinutes: number;
+    distanceKm: number;
+    fuelLiters: number;
+    issuesCount: number;
+  };
+  lastSeen?: string;
 }
 
 export interface DriverDayMetrics {
