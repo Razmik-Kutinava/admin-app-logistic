@@ -3,7 +3,7 @@ import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
 // ===== MOCK MODE - БЕЗ SUPABASE =====
-const MOCK_MODE = false;
+const MOCK_MODE = true;
 
 // ===== Signals =====
 const [user, setUser] = createSignal<User | null>(null);
