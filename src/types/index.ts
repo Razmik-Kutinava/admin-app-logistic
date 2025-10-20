@@ -59,16 +59,18 @@ export interface Event {
   created_at: string;
 }
 
-export enum EventType {
-  START_DAY = 'START_DAY',
-  END_DAY = 'END_DAY',
-  START_STOP = 'START_STOP',
-  END_STOP = 'END_STOP',
-  ISSUE_CREATED = 'ISSUE_CREATED',
-  GPS_LOST = 'GPS_LOST',
-  GPS_RESTORED = 'GPS_RESTORED',
-  EPOD_UPLOADED = 'EPOD_UPLOADED'
-}
+export const EventType = {
+  START_DAY: 'START_DAY',
+  END_DAY: 'END_DAY',
+  START_STOP: 'START_STOP',
+  END_STOP: 'END_STOP',
+  ISSUE_CREATED: 'ISSUE_CREATED',
+  GPS_LOST: 'GPS_LOST',
+  GPS_RESTORED: 'GPS_RESTORED',
+  EPOD_UPLOADED: 'EPOD_UPLOADED'
+} as const;
+
+export type EventType = typeof EventType[keyof typeof EventType];
 
 // Re-export specific types
 export * from './driver';

@@ -1,12 +1,14 @@
-export enum IssueType {
-  NO_SHOW = 'NO_SHOW',
-  BAD_ADDRESS = 'BAD_ADDRESS',
-  TRAFFIC = 'TRAFFIC',
-  ACCESS_DENIED = 'ACCESS_DENIED',
-  PARKING_ISSUE = 'PARKING_ISSUE',
-  CLIENT_DELAY = 'CLIENT_DELAY',
-  OTHER = 'OTHER'
-}
+export const IssueType = {
+  NO_SHOW: 'NO_SHOW',
+  BAD_ADDRESS: 'BAD_ADDRESS',
+  TRAFFIC: 'TRAFFIC',
+  ACCESS_DENIED: 'ACCESS_DENIED',
+  PARKING_ISSUE: 'PARKING_ISSUE',
+  CLIENT_DELAY: 'CLIENT_DELAY',
+  OTHER: 'OTHER'
+} as const;
+
+export type IssueType = typeof IssueType[keyof typeof IssueType];
 
 export interface Issue {
   id: string;

@@ -1,6 +1,7 @@
 import { createSignal, onMount, onCleanup } from 'solid-js';
+import type { JSX } from 'solid-js';
 import { Modal, Badge, Button } from '../UI';
-import type { AlertWithDetails, AlertType, AlertSeverity } from '../../types/alert';
+import type { AlertWithDetails, AlertType } from '../../types/alert';
 import styles from './AlertDetailModal.module.css';
 
 interface AlertDetailModalProps {
@@ -137,7 +138,7 @@ function AlertDetailModal(props: AlertDetailModalProps): JSX.Element {
 
   const handleShowOnMap = () => {
     // TODO: Показать водителя на карте
-    alert('Показать водителя на карте');
+    window.alert('Показать водителя на карте');
   };
 
   const formatTime = (dateString: string): string => {
@@ -210,8 +211,8 @@ function AlertDetailModal(props: AlertDetailModalProps): JSX.Element {
           <div class={styles.recommendationsSection}>
             <h3>💡 Рекомендации</h3>
             <ul class={styles.recommendations}>
-              {getAlertRecommendations(alert.alert_type).map((recommendation, index) => (
-                <li key={index}>{recommendation}</li>
+              {getAlertRecommendations(alert.alert_type).map((recommendation) => (
+                <li>{recommendation}</li>
               ))}
             </ul>
           </div>
@@ -250,7 +251,7 @@ function AlertDetailModal(props: AlertDetailModalProps): JSX.Element {
             <Button variant="secondary" onClick={handleShowOnMap}>
               🗺️ Показать на карте
             </Button>
-            <Button variant="outline" onClick={props.onClose}>
+            <Button variant="ghost" onClick={props.onClose}>
               ❌ Отмена
             </Button>
           </div>

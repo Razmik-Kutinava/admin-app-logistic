@@ -31,7 +31,7 @@ function MapView(props: MapViewProps): JSX.Element {
   let mapContainer: HTMLDivElement | undefined;
   let map: L.Map | undefined;
   let markers: L.Marker[] = [];
-  let markerClusterGroup: L.MarkerClusterGroup | undefined;
+  let markerClusterGroup: any;
   let routeLayers: L.LayerGroup | undefined;
 
   // Состояние контролов карты
@@ -55,7 +55,7 @@ function MapView(props: MapViewProps): JSX.Element {
     }).addTo(map);
 
     // Инициализируем кластерную группу
-    markerClusterGroup = L.markerClusterGroup({
+    markerClusterGroup = (L as any).markerClusterGroup({
       chunkedLoading: true,
       maxClusterRadius: 50,
       spiderfyOnMaxZoom: true,
@@ -123,7 +123,7 @@ function MapView(props: MapViewProps): JSX.Element {
         // Добавляем маркер в кластер или напрямую на карту
         if (showClusters()) {
           markerClusterGroup.addLayer(marker);
-        } else {
+        } else if (map) {
           marker.addTo(map);
         }
 
@@ -201,8 +201,10 @@ function MapView(props: MapViewProps): JSX.Element {
       }).filter(Boolean);
 
       // Добавляем маршрут и стрелки на карту
-      routeLayers.addLayer(routePolyline);
-      arrowMarkers.forEach(arrow => arrow && routeLayers.addLayer(arrow));
+      if (routeLayers) {
+        routeLayers.addLayer(routePolyline);
+        arrowMarkers.forEach(arrow => arrow && routeLayers!.addLayer(arrow));
+      }
     }
   };
 

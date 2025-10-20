@@ -1,4 +1,5 @@
 import { onMount, onCleanup, createSignal } from 'solid-js';
+import type { JSX } from 'solid-js';
 import { Modal, Badge, Button } from '../UI';
 import type { DriverWithStats } from '../../types/driver';
 import styles from './DriverMapModal.module.css';
@@ -309,7 +310,7 @@ function DriverMapModal(props: DriverMapModalProps): JSX.Element {
           >
             💬 Написать сообщение
           </Button>
-          <Button variant="outline" onClick={props.onClose}>
+          <Button variant="ghost" onClick={props.onClose}>
             ❌ Закрыть
           </Button>
         </div>

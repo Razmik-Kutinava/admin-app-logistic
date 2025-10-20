@@ -106,7 +106,7 @@ function Table(props: TableProps): JSX.Element {
             }
           >
             <For each={sortedData()}>
-              {(row, index) => (
+              {(row, _) => (
                 <tr
                   class={styles.tr}
                   classList={{ [styles.clickable]: !!props.onRowClick }}

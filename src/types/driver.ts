@@ -1,9 +1,11 @@
-export enum DriverStatus {
-  ONLINE = 'ONLINE',
-  DRIVING = 'DRIVING',
-  IDLE = 'IDLE',
-  OFFLINE = 'OFFLINE'
-}
+export const DriverStatus = {
+  ONLINE: 'ONLINE',
+  DRIVING: 'DRIVING',
+  IDLE: 'IDLE',
+  OFFLINE: 'OFFLINE'
+} as const;
+
+export type DriverStatus = typeof DriverStatus[keyof typeof DriverStatus];
 
 export interface Driver {
   id: string;

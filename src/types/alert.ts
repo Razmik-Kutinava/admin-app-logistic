@@ -1,16 +1,20 @@
-export enum AlertType {
-  LONG_IDLE = 'LONG_IDLE',
-  TOO_MANY_ISSUES = 'TOO_MANY_ISSUES',
-  MAINTENANCE_DUE = 'MAINTENANCE_DUE',
-  GPS_LOST = 'GPS_LOST',
-  ROUTE_DELAYED = 'ROUTE_DELAYED'
-}
+export const AlertType = {
+  LONG_IDLE: 'LONG_IDLE',
+  TOO_MANY_ISSUES: 'TOO_MANY_ISSUES',
+  MAINTENANCE_DUE: 'MAINTENANCE_DUE',
+  GPS_LOST: 'GPS_LOST',
+  ROUTE_DELAYED: 'ROUTE_DELAYED'
+} as const;
 
-export enum AlertSeverity {
-  INFO = 'INFO',
-  WARNING = 'WARNING',
-  CRITICAL = 'CRITICAL'
-}
+export type AlertType = typeof AlertType[keyof typeof AlertType];
+
+export const AlertSeverity = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  CRITICAL: 'CRITICAL'
+} as const;
+
+export type AlertSeverity = typeof AlertSeverity[keyof typeof AlertSeverity];
 
 export interface Alert {
   id: string;

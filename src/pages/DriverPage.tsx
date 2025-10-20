@@ -50,7 +50,7 @@ function DriverPage(): JSX.Element {
 
   const handleMessage = () => {
     if (driver()) {
-      alert(`Отправка сообщения водителю ${driver()!.firstName} ${driver()!.lastName}`);
+      alert(`Отправка сообщения водителю ${driver()!.first_name} ${driver()!.last_name}`);
     }
   };
 
@@ -105,21 +105,21 @@ function DriverPage(): JSX.Element {
           </Button>
           <div class={styles.driverHeader}>
             <div class={styles.avatar}>
-              {currentDriver.firstName.charAt(0)}{currentDriver.lastName.charAt(0)}
+              {currentDriver.first_name.charAt(0)}{currentDriver.last_name.charAt(0)}
             </div>
             <div class={styles.driverInfo}>
               <h1 class={styles.driverName}>
-                {currentDriver.firstName} {currentDriver.lastName}
+                {currentDriver.first_name} {currentDriver.last_name}
               </h1>
               <div class={styles.driverMeta}>
                 <span class={styles.phone}>📞 {currentDriver.phone}</span>
-                <span class={styles.region}>🌍 {currentDriver.regionCode}</span>
-                <span class={styles.hub}>🏢 {currentDriver.hubCode}</span>
+                <span class={styles.region}>🌍 {currentDriver.region}</span>
+                <span class={styles.hub}>🏢 {currentDriver.hub_id}</span>
               </div>
               <div class={styles.statusRow}>
                 <Badge status={currentDriver.status} size="large" />
                 <span class={styles.lastSeen}>
-                  Последний раз онлайн: {new Date(currentDriver.lastSeen).toLocaleTimeString('ru-RU')}
+                  Последний раз онлайн: {currentDriver.lastSeen ? new Date(currentDriver.lastSeen).toLocaleTimeString('ru-RU') : 'Неизвестно'}
                 </span>
               </div>
             </div>
@@ -337,12 +337,12 @@ function DriverPage(): JSX.Element {
               <Card title="📋 Маршруты за период" padding="large">
                 <Table
                   columns={[
-                    { key: 'route', title: 'Маршрут', width: '20%' },
-                    { key: 'time', title: 'Время', width: '20%' },
-                    { key: 'addresses', title: 'Адреса', width: '15%' },
-                    { key: 'distance', title: 'Км', width: '10%' },
-                    { key: 'status', title: 'Статус', width: '15%' },
-                    { key: 'actions', title: 'Действия', width: '20%' }
+                    { key: 'route', header: 'Маршрут', width: '20%' },
+                    { key: 'time', header: 'Время', width: '20%' },
+                    { key: 'addresses', header: 'Адреса', width: '15%' },
+                    { key: 'distance', header: 'Км', width: '10%' },
+                    { key: 'status', header: 'Статус', width: '15%' },
+                    { key: 'actions', header: 'Действия', width: '20%' }
                   ]}
                   data={[
                     {

@@ -66,15 +66,15 @@ export const exportToPDF = (data: any[], filename: string, title: string) => {
 
 export const exportDriversData = (drivers: DriverWithStats[], format: 'csv' | 'pdf') => {
   const data = drivers.map(driver => ({
-    name: `${driver.firstName} ${driver.lastName}`,
+    name: `${driver.first_name} ${driver.last_name}`,
     status: getStatusText(driver.status),
-    addresses: `${driver.todayStats.deliveredStops}/${driver.todayStats.totalStops}`,
-    distance: driver.todayStats.distanceKm.toFixed(1),
+    addresses: `${driver.todayStats?.deliveredStops || 0}/${driver.todayStats?.totalStops || 0}`,
+    distance: (driver.todayStats?.distanceKm || 0).toFixed(1),
     phone: driver.phone,
-    region: getRegionText(driver.regionCode),
-    hub: driver.hubCode,
-    idleTime: `${driver.todayStats.idleTimeMinutes} мин`,
-    issues: driver.todayStats.issuesCount
+    region: getRegionText(driver.region || ''),
+    hub: driver.hub_id,
+    idleTime: `${driver.todayStats?.idleTimeMinutes || 0} мин`,
+    issues: driver.todayStats?.issuesCount || 0
   }));
 
   const timestamp = new Date().toISOString().split('T')[0];

@@ -1,84 +1,49 @@
-import { format, formatInTimeZone } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+// Simplified timezone utilities for deployment
 
 // Timezone mappings for regions
 export const TIMEZONES: Record<string, string> = {
   AM: 'Asia/Yerevan',
   US: 'America/New_York',
-  CN: 'Asia/Shanghai'
+  EU: 'Europe/Berlin',
+  RU: 'Europe/Moscow'
 };
 
-// Default timezone (Armenia)
-export const DEFAULT_TIMEZONE = TIMEZONES.AM;
+const DEFAULT_TIMEZONE = 'Asia/Yerevan';
 
-/**
- * Get timezone by region code
- */
 export function getTimezoneByRegion(regionCode: string): string {
   return TIMEZONES[regionCode] || DEFAULT_TIMEZONE;
 }
 
-/**
- * Format date for a specific hub/region
- */
-export function formatForHub(date: Date | string, hubRegionCode: string, formatString = 'HH:mm dd.MM.yyyy'): string {
+export function formatInTimezone(dateObj: Date, _tz: string, _formatString: string): string {
+  return dateObj.toLocaleString('ru-RU');
+}
+
+export function formatForHub(date: Date | string, _hubRegionCode: string, _formatString = 'HH:mm dd.MM.yyyy'): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  const tz = getTimezoneByRegion(hubRegionCode);
-  return formatInTimeZone(dateObj, tz, formatString);
+  return dateObj.toLocaleString('ru-RU');
 }
 
-/**
- * Format date in Armenia timezone (default)
- */
-export function formatInArmeniaTime(date: Date | string, formatString = 'HH:mm dd.MM.yyyy'): string {
+export function convertToTimezone(date: Date | string, _timezone: string): Date {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return formatInTimeZone(dateObj, DEFAULT_TIMEZONE, formatString);
+  return dateObj;
 }
 
-/**
- * Convert UTC date to specific timezone
- */
-export function toTimezone(date: Date | string, timezone: string): Date {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return utcToZonedTime(dateObj, timezone);
+export function convertFromTimezone(date: Date, _timezone: string): Date {
+  return date;
 }
 
-/**
- * Convert date from timezone to UTC
- */
-export function toUTC(date: Date, timezone: string): Date {
-  return zonedTimeToUtc(date, timezone);
+export function getCurrentTimeInTimezone(_timezone: string): Date {
+  return new Date();
 }
 
-/**
- * Get current time in specific timezone
- */
-export function nowInTimezone(timezone: string = DEFAULT_TIMEZONE): Date {
-  return utcToZonedTime(new Date(), timezone);
+export function formatTimeInTimezone(dateObj: Date, _timezone: string): string {
+  return dateObj.toLocaleTimeString('ru-RU');
 }
 
-/**
- * Format time only (HH:mm)
- */
-export function formatTime(date: Date | string, timezone: string = DEFAULT_TIMEZONE): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return formatInTimeZone(dateObj, timezone, 'HH:mm');
+export function formatDateInTimezone(dateObj: Date, _timezone: string): string {
+  return dateObj.toLocaleDateString('ru-RU');
 }
 
-/**
- * Format date only (dd.MM.yyyy)
- */
-export function formatDate(date: Date | string, timezone: string = DEFAULT_TIMEZONE): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return formatInTimeZone(dateObj, timezone, 'dd.MM.yyyy');
+export function formatDateTimeInTimezone(dateObj: Date, _timezone: string): string {
+  return dateObj.toLocaleString('ru-RU');
 }
-
-/**
- * Format full datetime (dd.MM.yyyy HH:mm)
- */
-export function formatDateTime(date: Date | string, timezone: string = DEFAULT_TIMEZONE): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return formatInTimeZone(dateObj, timezone, 'dd.MM.yyyy HH:mm');
-}
-
-

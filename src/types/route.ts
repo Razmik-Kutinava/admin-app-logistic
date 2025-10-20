@@ -1,17 +1,21 @@
-export enum RouteStatus {
-  PLANNED = 'PLANNED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED'
-}
+export const RouteStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const;
 
-export enum StopStatus {
-  PLANNED = 'PLANNED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED',
-  ISSUE = 'ISSUE'
-}
+export type RouteStatus = typeof RouteStatus[keyof typeof RouteStatus];
+
+export const StopStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED',
+  ISSUE: 'ISSUE'
+} as const;
+
+export type StopStatus = typeof StopStatus[keyof typeof StopStatus];
 
 export interface Route {
   id: string;

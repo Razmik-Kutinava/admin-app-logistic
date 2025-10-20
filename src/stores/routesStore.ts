@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js';
 import { supabase } from '../lib/supabase';
-import type { Route, RouteWithDetails, RouteStatus } from '../types/route';
+import type { RouteWithDetails, RouteStatus } from '../types/route';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 // ===== Signals =====
